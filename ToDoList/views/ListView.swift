@@ -9,17 +9,20 @@ import SwiftUI
 
 struct ListView: View {
     
-    @State var items : [String] = [
-        "this is first item!",
-        "this is second",
-        "third"
-    ]
-    
+    @EnvironmentObject var listViewModel: ListViewModel
+
     var body: some View {
         List{
-            ForEach(items, id: \.self){ item in
-                ListRowView(title: item)
+            ForEach(listViewModel.items){ item in
+                ListRowView(item: item)
+                    .onTapGesture {
+                        withAnimation(.linear){
+                            listViewModel.updateItem(item: item)
+                        }
+                    }
             }
+            .onDelete(perform: listViewModel.deleteItem)
+            .onMove(perform: listViewModel.moveItem)
         }
         .listStyle(PlainListStyle())
         .navigationTitle("Todo List 📝")
@@ -37,4 +40,5 @@ struct ListView: View {
     NavigationView{
         ListView()
     }
+    .environmentObject(ListViewModel())
 }
